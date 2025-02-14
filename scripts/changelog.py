@@ -91,6 +91,10 @@ def check_changelog_pr_files(path) -> bool:
     all_changelog_pr_files_ok = True
 
     files = list_files_in_subfolder(path)
+    if not files:
+        print(f"No pr changelog files found in {path}")
+        return False
+
     matches = [f for f in files if re.match(file_pattern, f)]
     for match in matches:
         file_path = os.path.join(path, match)
