@@ -6,7 +6,7 @@ import markdown
 import re
 from bs4 import BeautifulSoup
 
-file_pattern = r'\b\w{2,6}-\d+_\w+\.md\b'
+file_pattern = r'^\b\w{2,6}-\d+_\w+\.md\b$'
 atlassian_jira_base_url = 'https://tamedia.atlassian.net/browse/'
 
 def list_files_in_subfolder(path: str):
@@ -96,7 +96,7 @@ def check_changelog_pr_files(path) -> bool:
     # filter files that match the pattern
     matches = [f for f in files if re.match(file_pattern, f)]
     if not matches:
-        print(f"No valid pr changelog files found in {path}")
+        print(f"No valid pr changelog files matching patten {file_pattern} found in {path}")
         return False
 
     for match in matches:
