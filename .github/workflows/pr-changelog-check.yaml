@@ -19,6 +19,9 @@ jobs:
       with:
         python-version: '3.x'
 
+    - name: Install dependencies
+      run: pip install -r ./scripts/requirements.txt
+
     - name: Changelog check
       if: ${{ !(contains(github.event.pull_request.labels.*.name, 'kind/changelog-not-required') || contains(github.event.pull_request.labels.*.name, 'Design') || contains(github.event.pull_request.labels.*.name, 'Website') || contains(github.event.pull_request.labels.*.name, 'Documentation'))}}
       run: ./scripts/changelog.py --path ../changelogs/unreleased --check
