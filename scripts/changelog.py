@@ -174,7 +174,7 @@ if __name__ == '__main__':
 
     if args.merge:
         try:
-            ok = merge_changelog_pr_files(args.path)
+            ok = merge_changelog_pr_files(args.path, args.changelog_file)
             if not ok:
                 exit(-1)
         except Exception as e:
