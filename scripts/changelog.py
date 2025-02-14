@@ -111,18 +111,58 @@ def check_changelog_pr_files(path) -> bool:
 
     return all_changelog_pr_files_ok
 
-def merge_changelog_pr_files():
-    pass
+def merge_changelog_pr_files(path: str, changelog_file_path: str) -> bool:
+    print("Merging changelog pr files at %s" % path)
+
+    # list all files in the subfolder
+    files = list_files_in_subfolder(path)
+
+    # filter files that match the pattern
+    matches = [f for f in files if re.match(file_pattern, f)]
+    if not matches:
+        print(f"No valid pr changelog files matching patten {file_pattern} found in {path}")
+        return False
+
+    # sort files by name
+    matches.sort()
+
+    # # merge all files into a single Changelog.md file
+    # with open(changelog_file_path, 'w') as changelog:
+    #     for match in matches:
+    #         file_path = os.path.join(path, match)
+    #         content = read_changelog_pr_file(file_path)
+    #         sections, is_valid = parse_changelog_pr_file_content(content, file_path)
+    #         if is_valid:
+    #             changelog.write(f"# {match}\n")
+    #             for section in sections:
+    #                 changelog.write(f"## {section}\n")
+    #                 for item in sections[section]:
+    #                     changelog.write(f"- {item}\n")
+    #             changelog.write("\n")
+    #         else:
+    #             print(f"File {file_path} is invalid")
+    #             return False
+
+    return True
+
 
 if __name__ == '__main__':
     p = argparse.ArgumentParser()
     group = p.add_mutually_exclusive_group(required=True)
+
     group.add_argument('--check', action='store_true', help='Check existence of a valid changelog pr files')
     group.add_argument('--merge', action='store_true', help='Merge changelog pr files in a single Changelog.md file')
     p.add_argument('--path', help='Path to the changelog pr files', required=True)
+    p.add_argument('--changelog-file', help='Path to the Changelog.md file', required=False, default='Changelog.md')
+    p.add_argument('--version', action='version', version='%(prog)s 1.0 (c) 2025 Chris Jürges ')
 
 
     args = p.parse_args()
+
+    if args.merge and not args.changelog_file:
+        print("Error: Changelog file is required for merge operation")
+        exit(-1)
+
     if args.check:
         try:
             ok = check_changelog_pr_files(args.path)
@@ -131,5 +171,12 @@ if __name__ == '__main__':
         except Exception as e:
             print(f"Error: {e}")
             exit(-1)
-    elif args.merge:
-        merge_changelog_pr_files()
+
+    if args.merge:
+        try:
+            ok = merge_changelog_pr_files(args.path)
+            if not ok:
+                exit(-1)
+        except Exception as e:
+            print(f"Error: {e}")
+            exit(-1)
