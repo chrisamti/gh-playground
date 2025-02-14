@@ -15,21 +15,24 @@ def list_files_in_subfolder(path: str):
         return [f for f in files if os.path.isfile(os.path.join(path, f))]
     except FileNotFoundError:
         print(f"Error: The directory {path} does not exist.")
-        return []
+        exit(-1)
+
 
 def read_changelog_pr_file(file: str):
     with open(file, 'r') as f:
         return f.read()
 
 def parse_changelog_pr_file_content(content: str, filename: str) -> (dict,bool):
+    sections = {}
     if not content:
         raise Exception("Empty content")
     if not filename:
         raise Exception("Empty filename")
 
+
     valid_section_titles = ['added:', 'changed:', 'fixed:', 'removed:', 'jira:']
     required_section = ['jira:']
-    sections = {}
+
 
     try:
         # Parse markdown content
@@ -114,8 +117,12 @@ if __name__ == '__main__':
 
     args = p.parse_args()
     if args.check:
-        ok = check_changelog_pr_files(args.path)
-        if not ok:
+        try:
+            ok = check_changelog_pr_files(args.path)
+            if not ok:
+                exit(-1)
+        except Exception as e:
+            print(f"Error: {e}")
             exit(-1)
     elif args.merge:
         merge_changelog_pr_files()
