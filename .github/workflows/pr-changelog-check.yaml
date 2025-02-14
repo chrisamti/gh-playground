@@ -14,6 +14,14 @@ jobs:
     - name: Check out the code
       uses: actions/checkout@v4
 
-    - name: Changelog check
+    - name: Setup python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: pip install -r ./scripts/requirements.txt
+
+    - name: Validate Unreleased Changelog files
       if: ${{ !(contains(github.event.pull_request.labels.*.name, 'kind/changelog-not-required') || contains(github.event.pull_request.labels.*.name, 'Design') || contains(github.event.pull_request.labels.*.name, 'Website') || contains(github.event.pull_request.labels.*.name, 'Documentation'))}}
-      run: ./scripts/changelog-check.sh
+      run: ./scripts/changelog.py --path ./changelogs/unreleased --check
